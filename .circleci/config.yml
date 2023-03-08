@@ -234,7 +234,7 @@ jobs:
 
   smoke-test:
     docker:
-      # Lightweight Docker image 
+      - image: alpine:latest
     steps:
       # Checkout code from git
       - run:
