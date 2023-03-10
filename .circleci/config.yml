@@ -211,7 +211,7 @@ jobs:
           command: |
             cd backend
             npm install
-            npn run migration > migrations_dump.txt
+            npm run migration > migrations_dump.txt
             pwd
             cat migrations_dump.txt
       - run:
