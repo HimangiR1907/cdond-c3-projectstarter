@@ -188,7 +188,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible tar gzip curl aws-cli nodejs, npm, and pm2
+            apk add --update ansible tar gzip curl aws-cli nodejs npm pm2
       - run:
           name: Configure server
           command: |
