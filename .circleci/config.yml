@@ -207,6 +207,10 @@ jobs:
       - restore_cache:
           keys: [backend-build]
       - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible tar gzip curl aws-cli
+      - run:
           name: Run migrations
           command: |
             cd backend
@@ -218,7 +222,8 @@ jobs:
           name: Send migration results to memstash
           command: |
             if grep -q "has been executed successfully." migrations_dump.txt
-              then echo success
+            then 
+              echo success
             fi
      # Here's where you will add some code to rollback on failure      
 
@@ -226,34 +231,46 @@ jobs:
     docker:
       - image: python:3.7-alpine3.11
     steps:
-      # Checkout code from git
+      - checkout
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            apk add --update tar ansible gzip nodejs npm  curl aws-cli
       - run:
           name: Get backend url
           command: |
-            # your code here
+            export BACKEND_IP=$(aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --output text )
             export API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL = ${API_URL}"
             echo "${API_URL}"
+            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+            echo "API_URL = ${API_URL}"
       - run:
           name: Deploy frontend objects
           command: |
-            # your code here
-      # Here's where you will add some code to rollback on failure      
+            cd frontend
+            npm install
+            npm run build
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            # Here's where you will add some code to rollback on failure      
                     
   deploy-backend:
     docker:
       - image: python:3.7-alpine3.11
     steps:
-      # Checkout code from git
-      # Add ssh keys with fingerprint
-      # attach workspace
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["aa:a2:4f:1e:08:bd:32:4d:54:b3:87:d0:2b:92:d0:1f"]
+      - attach_workspace:
+          at: .
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            apk add --update --no-cache tar ansible gzip nodejs npm  curl aws-cli
       - run:
           name: Deploy backend
           command: |
