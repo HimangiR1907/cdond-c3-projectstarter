@@ -3,6 +3,11 @@
   become: yes
   apt:
     update_cache: yes
+    
+- name: "Remove unuse dependencies"
+  become: yes
+  apt:
+    autoremove: yes
 
 - name: "upgrade packages"
   become: yes
