@@ -30,14 +30,14 @@
     state: present
     
 - name: "Deploy"
-   become: yes
-   unarchive: |
+  become: yes
+  unarchive: |
      src: files/artifact.tar.gz
      dest: .
     
 - name: Executing start
-   become: yes
-   shell: |
+  become: yes
+  shell: |
      pm2 start npm -- start
     
  
