@@ -29,7 +29,7 @@
     production: yes
     state: present
     
-- name: "Deploy"
+- name: Deploy
   become: yes
   unarchive: |
      src: files/artifact.tar.gz
@@ -40,4 +40,3 @@
   shell: |
      pm2 start npm -- start
     
- 
