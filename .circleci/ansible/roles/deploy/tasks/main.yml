@@ -21,22 +21,21 @@
     state: latest
     update_cache: yes
 
-- name: "install pm2"
+- name: Install pm2
   become: yes
   npm:
     name: pm2
     global: yes
     production: yes
-    state: present
-    
-- name: Deploy
+
+- name: Extract tar
   become: yes
-  unarchive: |
-     src: files/artifact.tar.gz
-     dest: .
-    
-- name: Executing start
+  unarchive:
+    src: files/artifact.tar.gz
+    dest: .
+
+- name: Start start the app
   become: yes
   shell: |
-     pm2 start npm -- start
-    
+    pm2 delete all
+    pm2 start npm -- start
